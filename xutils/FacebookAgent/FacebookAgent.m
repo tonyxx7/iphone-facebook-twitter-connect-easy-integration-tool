@@ -118,7 +118,9 @@
 		[self login];
 		return;
 	}
-	FBPermissionDialog* dialog = [[[FBPermissionDialog alloc] init] autorelease];
+	
+	// this line is orginally update by "Me" from comments on http://amanpages.com/iphone-app-development-core-sdk-cocoa/facebookagent-update-now-upload-a-photo-and-then-change-status-in-a-single-call-using-facebook-connect-for-iphone/
+	FBPermissionDialog* dialog = [[[FBPermissionDialog alloc] initWithSession:_session] autorelease];
 	dialog.delegate = self;
 	dialog.permission = @"status_update";
 	[dialog show];

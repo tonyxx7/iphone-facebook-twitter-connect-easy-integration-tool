@@ -206,7 +206,16 @@ static TwitterAgent* agent;
 	}else{
 		int left = 139 - ([sharedLink length] + [textView.text length]);
 		lblCharLeft.text= [NSString stringWithFormat:@"%d",left];
-		return YES;
+		
+		
+		// this fix was done by Jackie
+		//http://amanpages.com/sample-iphone-example-project/twitteragent-tutorial-tweet-from-iphone-app-in-one-line-code-with-auto-tinyurl/#comment-38026299
+		if([text isEqualToString:@"\n"]){
+			[textView resignFirstResponder];
+			return FALSE;
+		}else{
+			return YES;
+		}
 	}
 	
 	int left = 139 - ([sharedLink length] + [textView.text length]);
@@ -410,7 +419,11 @@ didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
 	if(link){
 		if(yesOrno){
 			link = [link stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding ];
-			NSURL* url = [NSURL URLWithString:[NSString stringWithFormat:@"http://tinyurl.com/api-create.php?url=@",link]];
+			/**
+			 * fixed by hobycoder
+			 * http://www.iphonedevsdk.com/forum/iphone-sdk-development/37754-twit-twitteragent-one-line-code-auto-tineurl.html#post183468
+			 */
+			NSURL* url = [NSURL URLWithString:[NSString stringWithFormat:@"http://tinyurl.com/api-create.php?url=%@",link]];
 			link = [NSString stringWithContentsOfURL:url];
 		}
 	}
