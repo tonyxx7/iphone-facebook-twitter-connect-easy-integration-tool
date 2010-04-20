@@ -7,20 +7,19 @@
 //
 
 #import <UIKit/UIKit.h>
-
+#import"MyViewController.h"
 /////////////////////////
 // Import these two header
-#import "FacebookAgent.h"
 #import "TwitterAgent.h"
 // for some helper macro
 #import "xmacros.h"
 
 //////////////////////////
 
-@interface xutils_exampleViewController : UIViewController<FacebookAgentDelegate> {
+@interface xutils_exampleViewController : MyViewController<FacebookAgentDelegate> {
 
 	// Declare these two varialbes
-	FacebookAgent* fbAgent;
+	//FacebookAgent* fbAgent;
 	TwitterAgent* twit;
 	//////////////////////////////
 }

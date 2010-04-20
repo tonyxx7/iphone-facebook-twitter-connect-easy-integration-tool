@@ -7,8 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0714D4B3117E3049001B300C /* FacebookAgent.m in Sources */ = {isa = PBXBuildFile; fileRef = 0714D4B2117E3049001B300C /* FacebookAgent.m */; };
+		0714D4CD117E3148001B300C /* MyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0714D4CC117E3148001B300C /* MyViewController.m */; };
 		0799A9A11165CE7D00DB8B5D /* BusyAgent.m in Sources */ = {isa = PBXBuildFile; fileRef = 0799A9741165CE7D00DB8B5D /* BusyAgent.m */; };
-		0799A9A21165CE7D00DB8B5D /* FacebookAgent.m in Sources */ = {isa = PBXBuildFile; fileRef = 0799A9771165CE7D00DB8B5D /* FacebookAgent.m */; };
 		0799A9A31165CE7D00DB8B5D /* FBConnectGlobal.m in Sources */ = {isa = PBXBuildFile; fileRef = 0799A9841165CE7D00DB8B5D /* FBConnectGlobal.m */; };
 		0799A9A41165CE7D00DB8B5D /* FBDialog.m in Sources */ = {isa = PBXBuildFile; fileRef = 0799A9851165CE7D00DB8B5D /* FBDialog.m */; };
 		0799A9A51165CE7D00DB8B5D /* FBFeedDialog.m in Sources */ = {isa = PBXBuildFile; fileRef = 0799A9861165CE7D00DB8B5D /* FBFeedDialog.m */; };
@@ -44,10 +45,12 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0714D4B1117E3049001B300C /* FacebookAgent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacebookAgent.h; sourceTree = "<group>"; };
+		0714D4B2117E3049001B300C /* FacebookAgent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacebookAgent.m; sourceTree = "<group>"; };
+		0714D4CB117E3148001B300C /* MyViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyViewController.h; sourceTree = "<group>"; };
+		0714D4CC117E3148001B300C /* MyViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyViewController.m; sourceTree = "<group>"; };
 		0799A9731165CE7D00DB8B5D /* BusyAgent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BusyAgent.h; sourceTree = "<group>"; };
 		0799A9741165CE7D00DB8B5D /* BusyAgent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BusyAgent.m; sourceTree = "<group>"; };
-		0799A9761165CE7D00DB8B5D /* FacebookAgent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacebookAgent.h; sourceTree = "<group>"; };
-		0799A9771165CE7D00DB8B5D /* FacebookAgent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacebookAgent.m; sourceTree = "<group>"; };
 		0799A97A1165CE7D00DB8B5D /* FBConnect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FBConnect.h; sourceTree = "<group>"; };
 		0799A97B1165CE7D00DB8B5D /* FBConnectGlobal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FBConnectGlobal.h; sourceTree = "<group>"; };
 		0799A97C1165CE7D00DB8B5D /* FBDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FBDialog.h; sourceTree = "<group>"; };
@@ -152,8 +155,8 @@
 		0799A9751165CE7D00DB8B5D /* FacebookAgent */ = {
 			isa = PBXGroup;
 			children = (
-				0799A9761165CE7D00DB8B5D /* FacebookAgent.h */,
-				0799A9771165CE7D00DB8B5D /* FacebookAgent.m */,
+				0714D4B1117E3049001B300C /* FacebookAgent.h */,
+				0714D4B2117E3049001B300C /* FacebookAgent.m */,
 				0799A9781165CE7D00DB8B5D /* src */,
 			);
 			path = FacebookAgent;
@@ -269,6 +272,8 @@
 				1D3623250D0F684500981E51 /* xutils_exampleAppDelegate.m */,
 				28D7ACF60DDB3853001CB0EB /* xutils_exampleViewController.h */,
 				28D7ACF70DDB3853001CB0EB /* xutils_exampleViewController.m */,
+				0714D4CB117E3148001B300C /* MyViewController.h */,
+				0714D4CC117E3148001B300C /* MyViewController.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -386,7 +391,6 @@
 				1D3623260D0F684500981E51 /* xutils_exampleAppDelegate.m in Sources */,
 				28D7ACF80DDB3853001CB0EB /* xutils_exampleViewController.m in Sources */,
 				0799A9A11165CE7D00DB8B5D /* BusyAgent.m in Sources */,
-				0799A9A21165CE7D00DB8B5D /* FacebookAgent.m in Sources */,
 				0799A9A31165CE7D00DB8B5D /* FBConnectGlobal.m in Sources */,
 				0799A9A41165CE7D00DB8B5D /* FBDialog.m in Sources */,
 				0799A9A51165CE7D00DB8B5D /* FBFeedDialog.m in Sources */,
@@ -407,6 +411,8 @@
 				0799A9CD1165CEAB00DB8B5D /* SBJsonBase.m in Sources */,
 				0799A9CE1165CEAB00DB8B5D /* CSBJsonParser.m in Sources */,
 				0799A9CF1165CEAB00DB8B5D /* SBJsonWriter.m in Sources */,
+				0714D4B3117E3049001B300C /* FacebookAgent.m in Sources */,
+				0714D4CD117E3148001B300C /* MyViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
