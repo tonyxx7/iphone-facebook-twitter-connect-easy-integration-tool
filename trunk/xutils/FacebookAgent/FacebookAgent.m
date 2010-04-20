@@ -9,6 +9,11 @@
 #import "FacebookAgent.h"
 
 /**
+ * For shared use
+ */
+static FacebookAgent* sharedAgent = nil;
+
+/**
  * Private methods
  */
 @interface FacebookAgent()
@@ -19,7 +24,7 @@
 @implementation FacebookAgent
 
 @synthesize isLoggedIn;
-@synthesize shouldFetchUsernameAfterLogin;
+@synthesize shouldFetchUserInfoAfterLogin;
 @synthesize delegate;
 @synthesize userPrompt;
 @synthesize targetUserId;
@@ -29,7 +34,11 @@
 @synthesize uploadImageCaption;
 @synthesize uploadImageAlbum;
 @synthesize shouldResumeSession;
+@synthesize userID;
+@synthesize permissionStatus;
+@synthesize userInfo;
 
+/*
 - (id)init{
 	UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"FacebookAgent Intialization error!" 
 													message:@"Please don't use init or new method to initialze. Only use this method:- (id)initWithApiKey:(NSString*)key ApiSecret:(NSString*) secret ApiProxy:(NSString*)proxy;"
@@ -40,29 +49,35 @@
 	[alert release];
 	return nil;
 }
+ */
 - (id)initWithApiKey:(NSString*)key ApiSecret:(NSString*)secret ApiProxy:(NSString*)proxy{
 	if( (self = [super init]) ){
-		
-		// Initialize
-		pendingAction = FacebookAgentActionNone;
-		
-		FBApiKey = [key retain];
-		FBApiSecret = [secret retain];
-		FBApiProxy = [proxy retain];
-		
-		isLoggedIn = NO;
-		updateStatusPending = NO;
-		
-		if (FBApiProxy) {
-			_session = [[FBSession sessionForApplication:FBApiKey getSessionProxy:FBApiProxy
-												delegate:self] retain];
-		} else {
-			_session = [[FBSession sessionForApplication:FBApiKey secret:FBApiSecret delegate:self] retain];
-		}
-		
+		[self initializeWithApiKey:key ApiSecret:secret ApiProxy:proxy];
 		return self;
 	}
 	return nil;
+}
+
+-(void)initializeWithApiKey:(NSString*)key ApiSecret:(NSString*)secret ApiProxy:(NSString*)proxy{
+	// Initialize
+	shouldFetchUserInfoAfterLogin  = YES;
+	shouldResumeSession = YES;
+	pendingAction = FacebookAgentActionNone;
+	currentAction = FacebookAgentActionNone;
+	
+	FBApiKey = [key retain];
+	FBApiSecret = [secret retain];
+	FBApiProxy = [proxy retain];
+	
+	isLoggedIn = NO;
+	updateStatusPending = NO;
+	
+	if (FBApiProxy) {
+		_session = [[FBSession sessionForApplication:FBApiKey getSessionProxy:FBApiProxy
+											delegate:self] retain];
+	} else {
+		_session = [[FBSession sessionForApplication:FBApiKey secret:FBApiSecret delegate:self] retain];
+	}
 }
 
 - (void)dealloc{
@@ -80,6 +95,9 @@
 	[uploadImageData release];
 	[uploadImageCaption release];
 	[uploadImageAlbum release];
+	self.userInfo = nil;
+	self.permissionStatus = nil;
+	//[sharedAgent release];sharedAgent = nil;
 	
 	[super dealloc];
 }
@@ -87,6 +105,8 @@
 
 
 - (void) login{
+	currentAction = FacebookAgentActionLogin;
+	
 	if(shouldResumeSession){ // try to resume first
 		if(! [_session resume] ){
 			if(_session.isConnected){
@@ -392,15 +412,18 @@
 
 #pragma mark FBSessionDelegate
 - (void)session:(FBSession*)session didLogin:(FBUID)uid {
+	currentAction = FacebookAgentActionNone;
 	isLoggedIn = YES;
+	self.userID = uid;
 	
 	[delegate facebookAgent:self loginStatus:YES];
 	
-	if(shouldFetchUsernameAfterLogin){
+	if(shouldFetchUserInfoAfterLogin){
 		NSString* fql = [NSString stringWithFormat:
-						 @"select uid,name from user where uid == %lld", session.uid];	
+						 @"select uid,name,pic_square,pic_small,locale from user where uid = %lld", session.uid];	
 		NSDictionary* params = [NSDictionary dictionaryWithObject:fql forKey:@"query"];
 		[[FBRequest requestWithDelegate:self] call:@"facebook.fql.query" params:params];
+		fqlType = FacebookAgentFQLTypeFetchUserInfo;
 	}
 	
 	if(pendingAction != FacebookAgentActionNone){
@@ -436,11 +459,13 @@
 	}
 }
 - (void)sessionDidNotLogin:(FBSession*)session {
+	currentAction = FacebookAgentActionNone;
 	isLoggedIn = NO;
 	[delegate facebookAgent:self loginStatus:NO];
 }
 
 - (void)sessionDidLogout:(FBSession*)session {
+	currentAction = FacebookAgentActionNone;
 	isLoggedIn = NO;
 	[delegate facebookAgent:self loginStatus:NO];
 }
@@ -448,12 +473,37 @@
 #pragma mark FBRequestDelegate
 - (void)request:(FBRequest*)request didLoad:(id)result {
 	if ([request.method isEqualToString:@"facebook.fql.query"]) {
-		NSArray* users = result;
-		NSDictionary* user = [users objectAtIndex:0];
-		NSString* name = [user objectForKey:@"name"];
+		NSArray* resultData = result;
+		switch (fqlType) {
+			case FacebookAgentFQLTypeFetchUserInfo:{
+				NSDictionary* user = [resultData objectAtIndex:0];
+				// Calling the delegate callback
+				self.userInfo = user;
+				[delegate facebookAgent:self didLoadInfo:user];
+				break;
+				}
+			case FacebookAgentFQLTypeFetchFriendList:
+				// Calling the delegate callback
+				[delegate facebookAgent:self didLoadFriendList:resultData onlyAppUsers:NO];
+				break;
+			case FacebookAgentFQLTypeFetchAppFriendList:
+				// Calling the delegate callback
+				[delegate facebookAgent:self didLoadFriendList:resultData onlyAppUsers:YES];
+				break;
+			case FacebookAgentFQLTypeFetchPermissions:
+				self.permissionStatus = [resultData objectAtIndex:0];
+				[delegate facebookAgent:self didLoadPermissions:[resultData objectAtIndex:0]];
+				break;
+			case FacebookAgentFQLTypeGeneral:
+				[delegate facebookAgent:self didLoadFQL:resultData];
+				break;
+
+			default:
+				break;
+		}
 		
-		// Calling the delegate callback
-		[delegate facebookAgent:self didLoadName:name];
+		//fqlType = FacebookAgentFQLTypeNone;
+		
 		
 	} else if ([request.method isEqualToString:@"facebook.users.setStatus"]) {
 		newStatus = nil;
@@ -507,9 +557,18 @@
 		uploadPhotoPending = NO;
 		[self uploadImage];
 	}
+	
+	if(pendingAction == FacebookAgentActionGrantPermission){
+		pendingAction = FacebookAgentActionNone;
+		[self.delegate facebookAgent:self permissionGranted:grantingPermission];
+	}
 }
 
 - (void)dialogDidCancel:(FBDialog*)dialog{
+	if(currentAction == FacebookAgentActionLogin){
+		[self.delegate facebookAgent:self loginStatus:NO];
+		currentAction = FacebookAgentActionNone;
+	}
 }
 
 - (void)dialog:(FBDialog*)dialog didFailWithError:(NSError*)error{
@@ -518,5 +577,178 @@
 		   didFailWithError:error];
 }
 
+- (void)getMyFriendList:(BOOL)onlyAppUsers{
+	
+	NSString* fql;
+	if(onlyAppUsers){
+		fqlType = FacebookAgentFQLTypeFetchAppFriendList;
+		fql = 	[NSString stringWithFormat:
+					 @"SELECT uid,name,pic_square,locale,online_presence FROM user WHERE \
+					 is_app_user = 1 \
+					 AND uid IN ( \
+					 SELECT uid2 FROM friend WHERE uid1 = %lld \
+					 )", _session.uid];
+	}else {
+		fqlType = FacebookAgentFQLTypeFetchFriendList;
+		fql = 	[NSString stringWithFormat:
+				 @"SELECT uid,name,pic_square,locale,online_presence FROM user WHERE \
+				 uid IN ( \
+				 SELECT uid2 FROM friend WHERE uid1 = %lld \
+				 )", _session.uid];
+	}
 
+	NSDictionary* params = [NSDictionary dictionaryWithObject:fql forKey:@"query"];
+	[[FBRequest requestWithDelegate:self] call:@"facebook.fql.query" params:params];
+	
+}
+- (void)runFQL:(NSString*)fql{
+	fqlType = FacebookAgentFQLTypeGeneral;
+	NSDictionary* params = [NSDictionary dictionaryWithObject:fql forKey:@"query"];
+	[[FBRequest requestWithDelegate:self] call:@"facebook.fql.query" params:params];
+}
+- (void)getPermissions{
+	fqlType = FacebookAgentFQLTypeFetchPermissions;
+	NSString* fql = [NSString stringWithFormat:@"select status_update \
+					 ,photo_upload \
+					 ,sms \
+					 ,offline_access\
+					 ,email\
+					 ,create_event\
+					 ,rsvp_event\
+					 ,publish_stream\
+					,read_stream\
+					 ,share_item\
+					 ,create_note\
+					 ,bookmarked\
+					 ,tab_added \
+					  from permissions where uid = %lld"
+					 ,_session.uid];
+	NSDictionary* params = [NSDictionary dictionaryWithObject:fql forKey:@"query"];
+	[[FBRequest requestWithDelegate:self] call:@"facebook.fql.query" params:params];
+	
+}
+
+- (void)grantPermission:(FacebookAgentPermission)type{
+	pendingAction = FacebookAgentActionGrantPermission;
+	grantingPermission = type;
+	
+	FBPermissionDialog* dialog = [[[FBPermissionDialog alloc] initWithSession:_session] autorelease];
+	dialog.delegate = self;
+	NSString* strPermission = @"offline_access";
+	switch (type) {
+		case FacebookAgentPermissionStatusUpdate:
+			strPermission = @"status_update";
+			break;
+		case FacebookAgentPermissionPhotoUpload:
+			strPermission = @"photo_upload";
+			break;
+		case FacebookAgentPermissionSMS:
+			strPermission = @"sms";
+			break;
+		case FacebookAgentPermissionOfflineAccess:
+			strPermission = @"offline_access";
+			break;
+		case FacebookAgentPermissionEmail:
+			strPermission = @"email";
+			break;
+		case FacebookAgentPermissionCreateEvent:
+			strPermission = @"create_event";
+			break;
+		case FacebookAgentPermissionRSVPEvent:
+			strPermission = @"rsvp_event";
+			break;
+		case FacebookAgentPermissionPublishStream:
+			strPermission = @"publish_stream";
+			break;
+		case FacebookAgentPermissionReadStream:
+			strPermission = @"read_stream";
+			break;
+		case FacebookAgentPermissionShareItem:
+			strPermission = @"share_item";
+			break;
+		case FacebookAgentPermissionCreateNote:
+			strPermission = @"create_note";
+			break;
+		case FacebookAgentPermissionBookmarked:
+			strPermission = @"bookmarked";
+			break;
+		case FacebookAgentPermissionTabAdded:
+			strPermission = @"tab_added";
+			break;
+		default:
+			strPermission = @"offline_access";
+			break;
+	}
+	dialog.permission = strPermission;
+	[dialog show];
+}
+
+- (BOOL)hasPermission:(FacebookAgentPermission)type{
+	
+	if(!self.permissionStatus)return NO;
+	
+	NSString* strPermission = @"offline_access";
+	switch (type) {
+		case FacebookAgentPermissionStatusUpdate:
+			strPermission = @"status_update";
+			break;
+		case FacebookAgentPermissionPhotoUpload:
+			strPermission = @"photo_upload";
+			break;
+		case FacebookAgentPermissionSMS:
+			strPermission = @"sms";
+			break;
+		case FacebookAgentPermissionOfflineAccess:
+			strPermission = @"offline_access";
+			break;
+		case FacebookAgentPermissionEmail:
+			strPermission = @"email";
+			break;
+		case FacebookAgentPermissionCreateEvent:
+			strPermission = @"create_event";
+			break;
+		case FacebookAgentPermissionRSVPEvent:
+			strPermission = @"rsvp_event";
+			break;
+		case FacebookAgentPermissionPublishStream:
+			strPermission = @"publish_stream";
+			break;
+		case FacebookAgentPermissionReadStream:
+			strPermission = @"read_stream";
+			break;
+		case FacebookAgentPermissionShareItem:
+			strPermission = @"share_item";
+			break;
+		case FacebookAgentPermissionCreateNote:
+			strPermission = @"create_note";
+			break;
+		case FacebookAgentPermissionBookmarked:
+			strPermission = @"bookmarked";
+			break;
+		case FacebookAgentPermissionTabAdded:
+			strPermission = @"tab_added";
+			break;
+		default:
+			strPermission = @"offline_access";
+			break;
+	}
+	return [[self.permissionStatus valueForKey:strPermission] boolValue];
+	
+}
++(FacebookAgent*)sharedAgent{
+	if(!sharedAgent){
+		sharedAgent = [[FacebookAgent alloc] init];
+	}
+	return sharedAgent;
+}
+- (NSString*)getUserName{
+	return [userInfo valueForKey:@"name"];
+	
+}
+- (NSString*)getUserProfileSquareImage{
+	return [userInfo valueForKey:@"pic_square"];
+}
+- (NSString*)getUserProfileImage{
+	return [userInfo valueForKey:@"pic_big"];
+}
 @end

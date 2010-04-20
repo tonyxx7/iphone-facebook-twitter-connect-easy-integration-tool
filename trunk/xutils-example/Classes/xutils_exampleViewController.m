@@ -41,11 +41,7 @@
 	
 	
 	// initialize facebook agent
-	fbAgent = [[FacebookAgent alloc] initWithApiKey:@"YOUR_FACEBOOK_APP_API_KEY" 
-										  ApiSecret:@"YOUR_FACEBOOK_APP_API_SECRET" 
-										   ApiProxy:nil];
-	fbAgent.delegate = self;
-	
+		
 	
 	// intialize twitter agent
 	twit = [[TwitterAgent alloc] init];
@@ -76,7 +72,6 @@
 
 - (void)dealloc {
 	[twit release];
-	[fbAgent release];
 	
 	
     [super dealloc];
@@ -88,12 +83,12 @@
 -(IBAction) OnFacebook:(id)sender{
 	// you have to create a facebook app first! 
 	// if done, delete the following two lines :)
-	ALERT(@"Have you created a facebook app?",@"You need to supply valid facebook app api key and ape secret");
-	return;
+	//ALERT(@"Have you created a facebook app?",@"You need to supply valid facebook app api key and ape secret");
+	//return;
 	
 	
-	fbAgent.shouldResumeSession = YES;
-	[fbAgent publishFeedWithName:@"Hellow world" 
+	[[FacebookAgent sharedAgent] setDelegate:self];
+	[[FacebookAgent sharedAgent] publishFeedWithName:@"Hellow world" 
 					 captionText:@"how are you?" 
 						imageurl:@"http://amanpages.com/wordpress/wp-content/uploads/2009/12/logo2.png" 
 						 linkurl:@"http://amanpages.com/" 
