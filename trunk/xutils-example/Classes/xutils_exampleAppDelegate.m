@@ -19,8 +19,8 @@
 - (void)applicationDidFinishLaunching:(UIApplication *)application {    
  
 	
-	[[FacebookAgent sharedAgent] initializeWithApiKey:@"e86f2c93c21e4084e5498b46535d19af" 
-											ApiSecret:@"6e24ecca21af93b73d4617cd75980084" 
+	[[FacebookAgent sharedAgent] initializeWithApiKey:@"YOUR API KEY" 
+											ApiSecret:@"YOUR_API SECRET" 
 											 ApiProxy:nil];
     // Override point for customization after app launch    
     [window addSubview:viewController.view];
