@@ -8,7 +8,6 @@
 
 #import "MyViewController.h"
 
-
 @implementation MyViewController
 
 /*
@@ -86,6 +85,7 @@
  * This method is called after the agent fetched permissions of the app
  */
 - (void) facebookAgent:(FacebookAgent*)agent didLoadPermissions:(NSArray*) data{
+	
 }
 
 /**

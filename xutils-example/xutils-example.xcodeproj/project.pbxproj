@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		070CA5B7117EC04200B4A9C2 /* Logout_iphone.png in Resources */ = {isa = PBXBuildFile; fileRef = 070CA5B5117EC04200B4A9C2 /* Logout_iphone.png */; };
+		070CA5B8117EC04200B4A9C2 /* Connect_iphone.png in Resources */ = {isa = PBXBuildFile; fileRef = 070CA5B6117EC04200B4A9C2 /* Connect_iphone.png */; };
 		0714D4B3117E3049001B300C /* FacebookAgent.m in Sources */ = {isa = PBXBuildFile; fileRef = 0714D4B2117E3049001B300C /* FacebookAgent.m */; };
 		0714D4CD117E3148001B300C /* MyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0714D4CC117E3148001B300C /* MyViewController.m */; };
 		0799A9A11165CE7D00DB8B5D /* BusyAgent.m in Sources */ = {isa = PBXBuildFile; fileRef = 0799A9741165CE7D00DB8B5D /* BusyAgent.m */; };
@@ -45,6 +47,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		070CA5B5117EC04200B4A9C2 /* Logout_iphone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Logout_iphone.png; sourceTree = "<group>"; };
+		070CA5B6117EC04200B4A9C2 /* Connect_iphone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Connect_iphone.png; sourceTree = "<group>"; };
 		0714D4B1117E3049001B300C /* FacebookAgent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacebookAgent.h; sourceTree = "<group>"; };
 		0714D4B2117E3049001B300C /* FacebookAgent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacebookAgent.m; sourceTree = "<group>"; };
 		0714D4CB117E3148001B300C /* MyViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyViewController.h; sourceTree = "<group>"; };
@@ -155,6 +159,8 @@
 		0799A9751165CE7D00DB8B5D /* FacebookAgent */ = {
 			isa = PBXGroup;
 			children = (
+				070CA5B5117EC04200B4A9C2 /* Logout_iphone.png */,
+				070CA5B6117EC04200B4A9C2 /* Connect_iphone.png */,
 				0714D4B1117E3049001B300C /* FacebookAgent.h */,
 				0714D4B2117E3049001B300C /* FacebookAgent.m */,
 				0799A9781165CE7D00DB8B5D /* src */,
@@ -377,6 +383,8 @@
 				0799A9B11165CE7D00DB8B5D /* twitter-logo-twit.png in Resources */,
 				0799A9B21165CE7D00DB8B5D /* twitter_agent_sign_out.png in Resources */,
 				0799A9B31165CE7D00DB8B5D /* Twitter_logo.png in Resources */,
+				070CA5B7117EC04200B4A9C2 /* Logout_iphone.png in Resources */,
+				070CA5B8117EC04200B4A9C2 /* Connect_iphone.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
