@@ -68,6 +68,14 @@ static BusyAgent* agent;
 
 }
 
+- (void) queueBusy{
+	[self makeBusy:YES];
+}
+- (void) dequeueBusy{
+	[self makeBusy:NO];
+}
+
+
 - (void) forceRemoveBusyState{
 	busyCount = 0;
 	[view removeFromSuperview];

@@ -25,6 +25,12 @@
 - (void) makeBusy:(BOOL)yesOrno;
 
 /**
+ * Better use these methods
+ */
+- (void) queueBusy;
+- (void) dequeueBusy;
+
+/**
  * Messed up with updateBusyState? call this method to remove busy state
  */
 - (void) forceRemoveBusyState;
