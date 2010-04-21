@@ -8,8 +8,9 @@
 
 #import "TwitterAgent.h"
 #import "BusyAgent.h"
+#import "xmacros.h"
 
-#define XAGENTS_TWITTER_CONFIG_FILE @"xagents_twitter_conifg_file.plist"
+#define XAGENTS_TWITTER_CONFIG_FILE DOC_PATH(@"xagents_twitter_conifg_file.plist")
 
 static TwitterAgent* agent;
 
